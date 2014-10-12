@@ -43,12 +43,19 @@
     [self.syncButton addTarget:self action:@selector(buttonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.syncButton];
     
-    self.pathSet = [[NSMutableSet alloc]init];
-    
     self.roomNumber = 1;
     
-    self.childAddedHandle = [self.firebase observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
+    self.childAddedHandle = [self.firebase observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
         //Insert Core Graphics decoder and renderer here
+        NSLog(@"==========Decoding==========");
+        NSDictionary *paths = (NSDictionary *)snapshot.value;
+        NSLog(@"%@", snapshot.name);
+        
+        NSArray *setMembers = [self.pathSet allObjects];
+        for (NSString *pathName in setMembers) {
+            NSString *path = [paths objectForKey:pathName];
+            NSLog(@"%@: %@", pathName, path);
+        }
     }];
     
 }
@@ -56,6 +63,7 @@
     
     NSMutableDictionary *paths = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
+    self.pathSet = [[NSMutableSet alloc]init];
     
     NSLog(@"==========Serializing==========");
     for (ACEDrawingPenTool *p in self.canvas.pathArray) {
@@ -64,9 +72,10 @@
         NSArray *points = [p serialize];
         
         [paths setObject:points forKey:name];
+        [self.pathSet addObject:name];
     }
     
-    [room setObject:paths forKey:[NSString stringWithFormat:@"Room %ld", self.roomNumber]];
+    [room setObject:paths forKey:[NSString stringWithFormat:@"Room: %ld", self.roomNumber]];
     
     [self.firebase setValue:room withCompletionBlock:^(NSError *error, Firebase *ref) {
         NSLog(@"Finished saving to Firebase");
