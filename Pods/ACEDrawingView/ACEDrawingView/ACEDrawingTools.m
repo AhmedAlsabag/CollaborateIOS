@@ -104,16 +104,60 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
     #endif
 }
 
-//- (id)initWithCoder:(NSCoder *)decoder {
-//    if (self = [super init]) {
-//        path = (__bridge CGMutablePathRef)([decoder decodeObjectForKey:@"path"]);
-//    }
-//    return self;
-//}
-//
-//- (void)encodeWithCoder:(NSCoder *)encoder {
-//    [encoder encodeObject:(__bridge id)(path) forKey:@"path"];
-//}
+- (NSArray *)serialize
+{
+    NSLog(@"\nPen Tool: %@", self);
+    
+    NSLog(@"Pen Paths: %@", path);
+    
+    NSMutableArray *points = [[NSMutableArray alloc]init];
+    CGPathApply(path, (__bridge void *)(points), processPathElement);
+    
+    for (NSString *point in points) {
+        NSLog(@"%@", point);
+    }
+    
+    return points;
+}
+
+void processPathElement(void* info, const CGPathElement* element) {
+    NSMutableArray *points = (__bridge NSMutableArray *)info;
+    
+    switch (element->type) {
+        case kCGPathElementMoveToPoint: {
+            CGPoint point = element ->points[0];
+            [points addObject:[NSString stringWithFormat:@"%s %f %f\n", "Move To:", point.x, point.y]];
+//            printf("%s %f %f\n", "Move To:", point.x, point.y);
+            break;
+        }
+        case kCGPathElementAddLineToPoint: {
+            CGPoint point = element ->points[0];
+            [points addObject:[NSString stringWithFormat:@"%s %f %f\n", "Line To:", point.x, point.y]];
+//            printf("%s %f %f\n", "Line To:", point.x, point.y);
+            break;
+        }
+        case kCGPathElementAddQuadCurveToPoint: {
+            CGPoint point1 = element->points[0];
+            CGPoint point2 = element->points[1];
+            [points addObject:[NSString stringWithFormat:@"%s %f %f %f %f\n", "Quad Curve To:", point1.x, point1.y, point2.x, point2.y]];
+//            printf("%s %f %f %f %f\n", "Quad Curve To:", point1.x, point1.y, point2.x, point2.y);
+            break;
+        }
+        case kCGPathElementAddCurveToPoint: {
+            CGPoint point1 = element->points[0];
+            CGPoint point2 = element->points[1];
+            CGPoint point3 = element->points[2];
+            [points addObject:[NSString stringWithFormat:@"%s %f %f %f %f %f %f\n", "Curve To:", point1.x, point1.y, point2.x, point2.y, point3.x, point3.y]];
+//            printf("%s %f %f %f %f %f %f\n", "Curve To:", point1.x, point1.y, point2.x, point2.y, point3.x, point3.y);
+            break;
+        }
+        case kCGPathElementCloseSubpath: {
+            [points addObject:@"Close Path."];
+//            printf("Close Path.");
+            break;
+        }
+    }
+}
 
 @end
 

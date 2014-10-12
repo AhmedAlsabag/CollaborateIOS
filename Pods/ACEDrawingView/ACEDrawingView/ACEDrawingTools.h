@@ -60,7 +60,9 @@
 
 - (CGRect)addPathPreviousPreviousPoint:(CGPoint)p2Point withPreviousPoint:(CGPoint)p1Point withCurrentPoint:(CGPoint)cpoint;
 
+//Added by Andrew
 - (CGMutablePathRef)getPath;
+- (NSArray *)serialize;
 
 @end
 
