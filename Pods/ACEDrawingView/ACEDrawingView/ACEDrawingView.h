@@ -40,12 +40,13 @@ typedef enum {
 
 @protocol ACEDrawingViewDelegate, ACEDrawingTool;
 
-@interface ACEDrawingView : UIView<UITextViewDelegate>
+@interface ACEDrawingView : UIView<UITextViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) NSMutableArray *pathArray;
+@property (nonatomic, strong) id<ACEDrawingTool> currentTool;
 
 @property (nonatomic, assign) ACEDrawingToolType drawTool;
-@property (nonatomic, assign) id<ACEDrawingViewDelegate> delegate;
+@property (nonatomic, weak) id<ACEDrawingViewDelegate> delegate;
 
 // public properties
 @property (nonatomic, strong) UIColor *lineColor;

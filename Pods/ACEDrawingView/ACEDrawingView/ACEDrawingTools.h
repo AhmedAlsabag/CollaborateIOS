@@ -62,6 +62,7 @@
 
 //Added by Andrew
 - (CGMutablePathRef)getPath;
+- (void)setPath:(CGMutablePathRef)newPath;
 - (NSArray *)serialize;
 
 @end

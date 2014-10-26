@@ -42,10 +42,12 @@
 }
 
 @property (nonatomic, strong) NSMutableArray *bufferArray;
-@property (nonatomic, strong) id<ACEDrawingTool> currentTool;
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, assign) CGFloat originalFrameYPos;
+
+//Andrew Added this
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPress;
 @end
 
 #pragma mark -
@@ -87,8 +89,39 @@
     self.originalFrameYPos = self.frame.origin.y;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    
+    //Long Press Gesture for Delegate
+    //Note: touchesEnded isn't being properly called so delegate methods aren't working. This is a workaround.
+    self.longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
+    self.longPress.minimumPressDuration = 0.01;
+    NSLog(@"Long Press Attached!");
 }
 
+#pragma mark Andrew's Stuff
+- (void)handleLongPress:(UILongPressGestureRecognizer *)longPress
+{
+    NSLog(@"JIOSGJWEOG");
+    switch (self.longPress.state) {
+        case UIGestureRecognizerStateBegan:
+            NSLog(@"Long Press Began");
+            [self.delegate drawingView:self willBeginDrawUsingTool:self.currentTool];
+            break;
+            
+        case UIGestureRecognizerStateEnded:
+            NSLog(@"Long Press Ended");
+            [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
+            break;
+            
+        default:
+            NSLog(@"Other Long Press Gesture State");
+            break;
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
 
 #pragma mark - Drawing
 
@@ -99,7 +132,10 @@
     [self drawPath];
 #else
     [self.image drawInRect:self.bounds];
-    [self.currentTool draw];
+    for (ACEDrawingPenTool *currentTool in self.pathArray) {
+        [currentTool draw];
+    }
+//    [self.currentTool draw];
 #endif
 }
 
@@ -140,6 +176,7 @@
     [self.bufferArray removeAllObjects];
     
     // call the delegate
+    [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
     if ([self.delegate respondsToSelector:@selector(drawingView:didEndDrawUsingTool:)]) {
         [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
     }
@@ -202,11 +239,12 @@
     }
 }
 
-
 #pragma mark - Touch Methods
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [super touchesBegan:touches withEvent:event];
+    
     if (self.textView && !self.textView.hidden) {
         [self commitAndHideTextEntry];
         return;
@@ -240,6 +278,8 @@
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [super touchesMoved:touches withEvent:event];
+    
     // save all the touches in the path
     UITouch *touch = [touches anyObject];
     
@@ -271,7 +311,7 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     // make sure a point is recorded
-    [self touchesMoved:touches withEvent:event];
+    [super touchesEnded:touches withEvent:event];
     
     if ([self.currentTool isKindOfClass:[ACEDrawingTextTool class]]) {
         [self startTextEntry];
@@ -553,6 +593,13 @@
         [self setNeedsDisplay];
     }
 }
+
+//- (void)setPathArray:(NSMutableArray *)pathArray
+//{
+//    _pathArray = pathArray;
+//    
+//    [self setNeedsDisplay];
+//}
 
 
 - (void)dealloc

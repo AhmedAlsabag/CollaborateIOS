@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ACEDrawingVIew.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <ACEDrawingViewDelegate>
 
 
 @end

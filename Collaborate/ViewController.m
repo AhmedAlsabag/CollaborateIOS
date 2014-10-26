@@ -28,38 +28,90 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    self.canvas = [[ACEDrawingView alloc]initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) * 0.95 - (CGRectGetHeight(self.view.bounds) * 0.05))];
+    self.pathSet = [[NSMutableSet alloc]init];
+    
+    self.canvas = [[ACEDrawingView alloc]initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
+    self.canvas.delegate = self;
     self.canvas.lineWidth = 2.00;
     
     [self.view addSubview:self.canvas];
     
     self.firebase = [[Firebase alloc]initWithUrl:@"https://collaborateios.firebaseio.com/"];
     
-    self.syncButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.syncButton.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) * 0.10);
-    self.syncButton.center = CGPointMake(CGRectGetWidth(self.view.bounds) * 0.50, CGRectGetHeight(self.view.bounds) * 0.95);
-//    self.syncButton.backgroundColor = [UIColor blackColor];
-    [self.syncButton setTitle:@"Sync to Firebase" forState:UIControlStateNormal];
-    [self.syncButton addTarget:self action:@selector(buttonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.syncButton];
-    
     self.roomNumber = 1;
     
-    self.childAddedHandle = [self.firebase observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
+    self.childAddedHandle = [self.firebase observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
         //Insert Core Graphics decoder and renderer here
         NSLog(@"==========Decoding==========");
         NSDictionary *paths = (NSDictionary *)snapshot.value;
-        NSLog(@"%@", snapshot.name);
+        NSLog(@"%@\n", snapshot.name);
+        
+        for (NSString *pathKey in paths) {
+            NSLog(@"Path Key: %@", pathKey);
+            [self.pathSet addObject:pathKey];
+        }
+        NSLog(@"\n");
+        
+        NSMutableArray *pathList = [[NSMutableArray alloc]init];
         
         NSArray *setMembers = [self.pathSet allObjects];
         for (NSString *pathName in setMembers) {
-            NSString *path = [paths objectForKey:pathName];
-            NSLog(@"%@: %@", pathName, path);
+            NSArray *pathComponentsArray = [paths objectForKey:pathName];
+            
+            CGMutablePathRef path = CGPathCreateMutable();
+            NSLog(@"Name: %@", pathName);
+            for (NSString *currentPathElement in pathComponentsArray) {
+                NSLog(@"%@", currentPathElement);
+                
+                NSArray *elements = [currentPathElement componentsSeparatedByString:@" "];
+                if ([elements[0] isEqualToString:@"MoveTo"]) {
+                    CGPathMoveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue]);
+                } else if ([elements[0] isEqualToString:@"LineTo"]) {
+                    CGPathAddLineToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue]);
+                } else if ([elements[0] isEqualToString:@"QuadCurveTo"]) {
+                    CGPathAddQuadCurveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue]);
+                } else if ([elements[0] isEqualToString:@"CurveTo"]) {
+                    CGPathAddCurveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue], [elements[5] floatValue], [elements[6] floatValue]);
+                } else {
+                    NSLog(@"Error: Core Graphics Path Identifier.");
+                }
+            }
+            NSLog(@"\n");
+            
+            ACEDrawingPenTool *penTool = [[ACEDrawingPenTool alloc]init];
+            penTool.lineAlpha = 1.00;
+            penTool.lineColor = [UIColor blackColor];
+            penTool.lineWidth = 2.00;
+            
+            [penTool setPath:path];
+            [pathList addObject:penTool];
         }
+        
+        self.canvas.pathArray = pathList;
+        [self.canvas setNeedsDisplay];
+        
+        NSLog(@"Number of Paths: %ld", [pathList count]);
     }];
-    
 }
-- (void)buttonPressed:(id)sender {
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+}
+
+- (void)drawingView:(ACEDrawingView *)view willBeginDrawUsingTool:(id<ACEDrawingTool>)tool
+{
+    NSLog(@"Drawing Path Began");
+}
+
+- (void)drawingView:(ACEDrawingView *)view didEndDrawUsingTool:(id<ACEDrawingTool>)tool
+{
+    NSLog(@"Drawing Path Ended");
     
     NSMutableDictionary *paths = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
