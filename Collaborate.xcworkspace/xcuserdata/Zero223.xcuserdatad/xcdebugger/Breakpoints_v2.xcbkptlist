@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/ACEDrawingView/ACEDrawingView/ACEDrawingView.m"
-            timestampString = "436048765.590218"
+            timestampString = "436049978.561419"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
             landmarkName = "-drawRect:"
             landmarkType = "5">
          </BreakpointContent>

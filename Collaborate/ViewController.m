@@ -18,8 +18,9 @@
 @property (strong, nonatomic) Firebase              *firebase;
 @property (strong, nonatomic) NSMutableSet          *pathSet;
 @property (nonatomic) FirebaseHandle                childAddedHandle;
+@property (nonatomic) FirebaseHandle                childChangedHandle;
 
-@property (strong, nonatomic) UIButton              *syncButton;
+@property (weak, nonatomic) IBOutlet UIButton *clearButton;
 
 @end
 
@@ -35,6 +36,8 @@
     self.canvas.lineWidth = 2.00;
     
     [self.view addSubview:self.canvas];
+    
+    [self.view addSubview:self.clearButton];
     
     self.firebase = [[Firebase alloc]initWithUrl:@"https://collaborateios.firebaseio.com/"];
     
@@ -92,6 +95,66 @@
         
         NSLog(@"Number of Paths: %ld", [pathList count]);
     }];
+    
+    self.childChangedHandle = [self.firebase observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
+        //Insert Core Graphics decoder and renderer here
+        NSLog(@"==========Decoding==========");
+        NSDictionary *paths = (NSDictionary *)snapshot.value;
+        NSLog(@"%@\n", snapshot.name);
+        self.pathSet = [[NSMutableSet alloc]init];
+        
+        for (NSString *pathKey in paths) {
+            NSLog(@"Path Key: %@", pathKey);
+            [self.pathSet addObject:pathKey];
+        }
+        NSLog(@"\n");
+        
+        NSMutableArray *pathList = [[NSMutableArray alloc]init];
+        
+        NSArray *setMembers = [self.pathSet allObjects];
+        for (NSString *pathName in setMembers) {
+            NSArray *pathComponentsArray = [paths objectForKey:pathName];
+            
+            CGMutablePathRef path = CGPathCreateMutable();
+            NSLog(@"Name: %@", pathName);
+            for (NSString *currentPathElement in pathComponentsArray) {
+                NSLog(@"%@", currentPathElement);
+                
+                NSArray *elements = [currentPathElement componentsSeparatedByString:@" "];
+                if ([elements[0] isEqualToString:@"MoveTo"]) {
+                    CGPathMoveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue]);
+                } else if ([elements[0] isEqualToString:@"LineTo"]) {
+                    CGPathAddLineToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue]);
+                } else if ([elements[0] isEqualToString:@"QuadCurveTo"]) {
+                    CGPathAddQuadCurveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue]);
+                } else if ([elements[0] isEqualToString:@"CurveTo"]) {
+                    CGPathAddCurveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue], [elements[5] floatValue], [elements[6] floatValue]);
+                } else {
+                    NSLog(@"Error: Core Graphics Path Identifier.");
+                }
+            }
+            NSLog(@"\n");
+            
+            ACEDrawingPenTool *penTool = [[ACEDrawingPenTool alloc]init];
+            penTool.lineAlpha = 1.00;
+            penTool.lineColor = [UIColor blackColor];
+            penTool.lineWidth = 2.00;
+            
+            [penTool setPath:path];
+            [pathList addObject:penTool];
+        }
+        
+        self.canvas.pathArray = pathList;
+        [self.canvas setNeedsDisplay];
+        
+        NSLog(@"Number of Paths: %ld", [pathList count]);
+    }];
+}
+
+- (IBAction)clearButtonPressed:(id)sender {
+
+    [self.canvas clear];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated

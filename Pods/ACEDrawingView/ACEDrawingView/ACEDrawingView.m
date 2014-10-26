@@ -46,8 +46,6 @@
 @property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, assign) CGFloat originalFrameYPos;
 
-//Andrew Added this
-@property (nonatomic, strong) UILongPressGestureRecognizer *longPress;
 @end
 
 #pragma mark -
@@ -90,37 +88,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
     
-    //Long Press Gesture for Delegate
-    //Note: touchesEnded isn't being properly called so delegate methods aren't working. This is a workaround.
-    self.longPress = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleLongPress:)];
-    self.longPress.minimumPressDuration = 0.01;
-    NSLog(@"Long Press Attached!");
-}
-
-#pragma mark Andrew's Stuff
-- (void)handleLongPress:(UILongPressGestureRecognizer *)longPress
-{
-    NSLog(@"JIOSGJWEOG");
-    switch (self.longPress.state) {
-        case UIGestureRecognizerStateBegan:
-            NSLog(@"Long Press Began");
-            [self.delegate drawingView:self willBeginDrawUsingTool:self.currentTool];
-            break;
-            
-        case UIGestureRecognizerStateEnded:
-            NSLog(@"Long Press Ended");
-            [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
-            break;
-            
-        default:
-            NSLog(@"Other Long Press Gesture State");
-            break;
-    }
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
 }
 
 #pragma mark - Drawing
@@ -135,7 +102,6 @@
     for (ACEDrawingPenTool *currentTool in self.pathArray) {
         [currentTool draw];
     }
-//    [self.currentTool draw];
 #endif
 }
 
@@ -177,9 +143,6 @@
     
     // call the delegate
     [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
-    if ([self.delegate respondsToSelector:@selector(drawingView:didEndDrawUsingTool:)]) {
-        [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
-    }
     
     // clear the current tool
     self.currentTool = nil;
@@ -271,9 +234,7 @@
     }
     
     // call the delegate
-    if ([self.delegate respondsToSelector:@selector(drawingView:willBeginDrawUsingTool:)]) {
-        [self.delegate drawingView:self willBeginDrawUsingTool:self.currentTool];
-    }
+    [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -549,6 +510,7 @@
     [self.pathArray removeAllObjects];
     self.prev_image = nil;
     [self updateCacheImage:YES];
+    [self finishDrawing];
     [self setNeedsDisplay];
 }
 
@@ -593,14 +555,6 @@
         [self setNeedsDisplay];
     }
 }
-
-//- (void)setPathArray:(NSMutableArray *)pathArray
-//{
-//    _pathArray = pathArray;
-//    
-//    [self setNeedsDisplay];
-//}
-
 
 - (void)dealloc
 {
