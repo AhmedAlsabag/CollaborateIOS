@@ -234,7 +234,7 @@
     }
     
     // call the delegate
-    [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
+    [self.delegate drawingView:self willBeginDrawUsingTool:self.currentTool];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event

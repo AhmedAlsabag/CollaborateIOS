@@ -188,6 +188,7 @@
         
         [paths setObject:points forKey:name];
         [self.pathSet addObject:name];
+        NSLog(@"Putting %@", name);
     }
     
     [room setObject:paths forKey:[NSString stringWithFormat:@"Room: %ld", self.roomNumber]];
