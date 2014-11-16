@@ -45,6 +45,7 @@
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, assign) CGFloat originalFrameYPos;
+@property (nonatomic, strong) NSMutableSet *rendered;
 
 @end
 
@@ -88,6 +89,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
     
+    // set up rendered list of paths
+    self.rendered = [[NSMutableSet alloc]init];
+    self.clearsContextBeforeDrawing = NO;
+    
 }
 
 #pragma mark - Drawing
@@ -99,7 +104,15 @@
     [self drawPath];
 #else
     [self.image drawInRect:self.bounds];
+    [self.currentTool draw];
     for (ACEDrawingPenTool *currentTool in self.pathArray) {
+        if (![self.rendered containsObject:currentTool.identifier] && currentTool.isCompleted) {
+            [self.rendered addObject:currentTool.identifier];
+            NSLog(@"Added %@ to rendered set", currentTool.identifier);
+            [currentTool draw];
+        } else if (!currentTool.isCompleted) {
+            [currentTool draw];
+        }
         [currentTool draw];
     }
 #endif

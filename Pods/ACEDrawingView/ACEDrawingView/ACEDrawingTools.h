@@ -45,6 +45,10 @@
 @property (nonatomic, assign) CGFloat lineAlpha;
 @property (nonatomic, assign) CGFloat lineWidth;
 
+//Andrew added this
+@property (strong, nonatomic) NSString *identifier;
+@property (assign, nonatomic) BOOL      isCompleted;
+
 - (void)setInitialPoint:(CGPoint)firstPoint;
 - (void)moveFromPoint:(CGPoint)startPoint toPoint:(CGPoint)endPoint;
 

@@ -41,6 +41,8 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
 
 @synthesize lineColor = _lineColor;
 @synthesize lineAlpha = _lineAlpha;
+@synthesize isCompleted = _isCompleted;
+@synthesize identifier = _identifier;
 
 - (id)init
 {
@@ -111,15 +113,15 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
 
 - (NSArray *)serialize
 {
-    NSLog(@"\nPen Tool: %@", self);
+//    NSLog(@"\nPen Tool: %@", self);
     
-    NSLog(@"Pen Paths: %@", path);
+//    NSLog(@"Pen Paths: %@", path);
     
     NSMutableArray *points = [[NSMutableArray alloc]init];
     CGPathApply(path, (__bridge void *)(points), processPathElement);
     
     for (NSString *point in points) {
-        NSLog(@"%@", point);
+//        NSLog(@"%@", point);
     }
     
     return points;
@@ -201,6 +203,8 @@ void processPathElement(void* info, const CGPathElement* element) {
 @synthesize lineColor = _lineColor;
 @synthesize lineAlpha = _lineAlpha;
 @synthesize lineWidth = _lineWidth;
+@synthesize isCompleted = _isCompleted;
+@synthesize identifier = _identifier;
 
 - (void)setInitialPoint:(CGPoint)firstPoint
 {
@@ -252,7 +256,8 @@ void processPathElement(void* info, const CGPathElement* element) {
 @synthesize lineColor = _lineColor;
 @synthesize lineAlpha = _lineAlpha;
 @synthesize lineWidth = _lineWidth;
-@synthesize attributedText = _attributedText;
+@synthesize isCompleted = _isCompleted;
+@synthesize identifier = _identifier;
 
 - (void)setInitialPoint:(CGPoint)firstPoint
 {
@@ -336,6 +341,8 @@ void processPathElement(void* info, const CGPathElement* element) {
 @synthesize lineColor = _lineColor;
 @synthesize lineAlpha = _lineAlpha;
 @synthesize lineWidth = _lineWidth;
+@synthesize isCompleted = _isCompleted;
+@synthesize identifier = _identifier;
 
 - (void)setInitialPoint:(CGPoint)firstPoint
 {
@@ -392,6 +399,8 @@ void processPathElement(void* info, const CGPathElement* element) {
 @synthesize lineColor = _lineColor;
 @synthesize lineAlpha = _lineAlpha;
 @synthesize lineWidth = _lineWidth;
+@synthesize isCompleted = _isCompleted;
+@synthesize identifier = _identifier;
 
 - (void)setInitialPoint:(CGPoint)firstPoint
 {
