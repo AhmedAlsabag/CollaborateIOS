@@ -179,7 +179,7 @@
         NSLog(@"Putting %@", name);
     }
     
-    if (!contains) {
+    if (!contains && tool) {
         Firebase *firebaseReference = [self.firebase childByAutoId];
         tool.identifier = firebaseReference.name;
         NSArray *points = [(ACEDrawingPenTool *)tool serialize];
