@@ -159,11 +159,16 @@
     NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
     self.pathSet = [[NSMutableSet alloc]init];
     
+    BOOL contains = NO;
     NSLog(@"==========Serializing==========");
     for (ACEDrawingPenTool *p in self.canvas.pathArray) {
         if (!p.identifier) {
             Firebase *firebaseReference = [self.firebase childByAutoId];
             p.identifier = firebaseReference.name;
+        }
+        
+        if (p == tool) {
+            contains = YES;
         }
         
         NSArray *points = [p serialize];
@@ -172,6 +177,15 @@
         [paths setObject:points forKey:name];
         [self.pathSet addObject:name];
         NSLog(@"Putting %@", name);
+    }
+    
+    if (!contains) {
+        Firebase *firebaseReference = [self.firebase childByAutoId];
+        tool.identifier = firebaseReference.name;
+        NSArray *points = [(ACEDrawingPenTool *)tool serialize];
+        NSString *name = tool.identifier;
+        
+        [paths setObject:points forKey:name];
     }
     
     [room setObject:paths forKey:[NSString stringWithFormat:@"Room: %ld", self.roomNumber]];
