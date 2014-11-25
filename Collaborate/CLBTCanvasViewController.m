@@ -156,41 +156,21 @@
 - (void)drawingView:(ACEDrawingView *)view didEndDrawUsingTool:(id<ACEDrawingTool>)tool
 {
     NSLog(@"Drawing Path Ended");
+    
     tool.isCompleted = YES;
     
     NSMutableDictionary *paths = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
     
-    BOOL contains = NO;
     NSLog(@"==========Serializing==========");
-    for (ACEDrawingPenTool *p in self.canvas.pathArray) {
-        if (!p.identifier) {
-            Firebase *firebaseReference = [self.firebase childByAutoId];
-            p.identifier = firebaseReference.name;
-        }
-        
-        if (p == tool) {
-            contains = YES;
-        }
-        
-        //Name,
-        NSDictionary *pathInfo = [p serialize];
-        NSString *name = p.identifier;
-        
-        
-        [paths setObject:pathInfo forKey:name];
-        NSLog(@"Putting %@", name);
+    for (NSString *toolKey in self.cache) {
+        [paths setObject:[self.cache objectForKey:toolKey] forKey:toolKey];
     }
     
-    //Incase another device uploads a CGPath to Firebase while current device is still drawing
-    if (!contains && tool) {
-        Firebase *firebaseReference = [self.firebase childByAutoId];
-        tool.identifier = firebaseReference.name;
-        NSDictionary *points = [(ACEDrawingPenTool *)tool serialize];
-        NSString *name = tool.identifier;
-        
-        [paths setObject:points forKey:name];
-    }
+    Firebase *firebaseReference = [self.firebase childByAutoId];
+    tool.identifier = firebaseReference.name;
+    NSDictionary *pathInfo = [(ACEDrawingPenTool *)tool serialize];
+    [paths setObject:pathInfo forKey:tool.identifier];
     
     [room setObject:paths forKey:[NSString stringWithFormat:@"Room: %ld", self.roomNumber]];
     
