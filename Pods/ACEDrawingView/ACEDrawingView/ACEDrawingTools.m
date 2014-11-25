@@ -110,20 +110,90 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
     #endif
 }
 
-- (NSArray *)serialize
+- (void)deserializePath:(NSString *)name withInfo:(NSDictionary *)info
 {
-//    NSLog(@"\nPen Tool: %@", self);
+
+    NSDictionary *rgb = [info objectForKey:@"color"];
+    CGFloat red = [[rgb objectForKey:@"red"] floatValue];
+    CGFloat green = [[rgb objectForKey:@"green"] floatValue];
+    CGFloat blue = [[rgb objectForKey:@"blue"] floatValue];
+    CGFloat alpha = [[rgb objectForKey:@"alpha"] floatValue];
     
-//    NSLog(@"Pen Paths: %@", path);
-    
-    NSMutableArray *points = [[NSMutableArray alloc]init];
-    CGPathApply(path, (__bridge void *)(points), processPathElement);
-    
-    for (NSString *point in points) {
-//        NSLog(@"%@", point);
+    NSArray *points = [info objectForKey:@"points"];
+    CGMutablePathRef currPath = CGPathCreateMutable();
+    for (NSString *currentPathElement in points) {
+        
+        NSArray *elements = [currentPathElement componentsSeparatedByString:@" "];
+        if ([elements[0] isEqualToString:@"MoveTo"]) {
+            CGPathMoveToPoint(currPath, NULL, [elements[1] floatValue], [elements[2] floatValue]);
+        } else if ([elements[0] isEqualToString:@"LineTo"]) {
+            CGPathAddLineToPoint(currPath, NULL, [elements[1] floatValue], [elements[2] floatValue]);
+        } else if ([elements[0] isEqualToString:@"QuadCurveTo"]) {
+            CGPathAddQuadCurveToPoint(currPath, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue]);
+        } else if ([elements[0] isEqualToString:@"CurveTo"]) {
+            CGPathAddCurveToPoint(currPath, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue], [elements[5] floatValue], [elements[6] floatValue]);
+        } else {
+            NSLog(@"Error: Core Graphics Path Identifier.");
+        }
     }
     
-    return points;
+    CGFloat width = [[info objectForKey:@"width"] floatValue];
+    
+    self.lineColor = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+    self.lineAlpha = alpha;
+    self.lineWidth = width;
+    self.isCompleted = YES;
+    self.identifier = name;
+    
+    [self setPath:currPath];
+    
+}
+
+- (NSDictionary *)serialize
+{
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
+    
+    //Points
+    NSMutableArray *points = [[NSMutableArray alloc]init];
+    CGPathApply(path, (__bridge void *)(points), processPathElement);
+    [dict setObject:points forKey:@"points"];
+    
+    //Line Color
+    NSMutableDictionary *rgb = [self getRGBComponents:self.lineColor];
+    [rgb setObject:[NSNumber numberWithFloat:self.lineAlpha] forKey:@"alpha"];
+    [dict setObject:rgb forKey:@"color"];
+    
+    //Line Width
+    [dict setObject:[NSNumber numberWithFloat:self.lineWidth] forKey:@"width"];
+    
+    //Type
+    [dict setObject:@"Pen" forKey:@"toolType"];
+    
+    return dict;
+}
+
+- (NSMutableDictionary *)getRGBComponents:(UIColor *)color {
+    NSMutableDictionary *components = [[NSMutableDictionary alloc]init];
+    
+    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+    unsigned char resultingPixel[4];
+    CGContextRef context = CGBitmapContextCreate(&resultingPixel,
+                                                 1,
+                                                 1,
+                                                 8,
+                                                 4,
+                                                 rgbColorSpace,
+                                                 kCGImageAlphaNoneSkipLast);
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, CGRectMake(0, 0, 1, 1));
+    CGContextRelease(context);
+    CGColorSpaceRelease(rgbColorSpace);
+    
+    [components setObject:[NSNumber numberWithFloat:resultingPixel[0] / 255.0f] forKey:@"red"];
+    [components setObject:[NSNumber numberWithFloat:resultingPixel[1] / 255.0f] forKey:@"green"];
+    [components setObject:[NSNumber numberWithFloat:resultingPixel[2] / 255.0f] forKey:@"blue"];
+    
+    return components;
 }
 
 void processPathElement(void* info, const CGPathElement* element) {
@@ -133,20 +203,17 @@ void processPathElement(void* info, const CGPathElement* element) {
         case kCGPathElementMoveToPoint: {
             CGPoint point = element ->points[0];
             [points addObject:[NSString stringWithFormat:@"%s %f %f\n", "MoveTo", point.x, point.y]];
-//            printf("%s %f %f\n", "Move To:", point.x, point.y);
             break;
         }
         case kCGPathElementAddLineToPoint: {
             CGPoint point = element ->points[0];
             [points addObject:[NSString stringWithFormat:@"%s %f %f\n", "LineTo", point.x, point.y]];
-//            printf("%s %f %f\n", "Line To:", point.x, point.y);
             break;
         }
         case kCGPathElementAddQuadCurveToPoint: {
             CGPoint point1 = element->points[0];
             CGPoint point2 = element->points[1];
             [points addObject:[NSString stringWithFormat:@"%s %f %f %f %f\n", "QuadCurveTo", point1.x, point1.y, point2.x, point2.y]];
-//            printf("%s %f %f %f %f\n", "Quad Curve To:", point1.x, point1.y, point2.x, point2.y);
             break;
         }
         case kCGPathElementAddCurveToPoint: {
@@ -154,15 +221,14 @@ void processPathElement(void* info, const CGPathElement* element) {
             CGPoint point2 = element->points[1];
             CGPoint point3 = element->points[2];
             [points addObject:[NSString stringWithFormat:@"%s %f %f %f %f %f %f\n", "CurveTo", point1.x, point1.y, point2.x, point2.y, point3.x, point3.y]];
-//            printf("%s %f %f %f %f %f %f\n", "Curve To:", point1.x, point1.y, point2.x, point2.y, point3.x, point3.y);
             break;
         }
         case kCGPathElementCloseSubpath: {
             [points addObject:@"ClosePath"];
-//            printf("Close Path.");
             break;
         }
     }
+    
 }
 
 @end

@@ -40,7 +40,6 @@
     
     self.canvas.delegate = self;
     self.canvas.lineWidth = 2.00;
-    self.canvas.clearsContextBeforeDrawing = NO;
     
 //    self.firebase = [[Firebase alloc]initWithUrl:@"https://collaborateios.firebaseio.com/"];
     self.firebase =  [[Firebase alloc]initWithUrl:@"https://shining-fire-4147.firebaseio.com/"];
@@ -72,51 +71,26 @@
     //Insert Core Graphics decoder and renderer here
     NSLog(@"==========Decoding==========");
     NSDictionary *paths = (NSDictionary *)snapshot.value;
-    NSLog(@"%@\n", snapshot.name);
-    
+
+    NSMutableArray *pathList = [[NSMutableArray alloc]init];
     for (NSString *pathKey in paths) {
         if (![self.cache objectForKey:pathKey]) {
             [self.cache setObject:[paths objectForKey:pathKey] forKey:pathKey];
-        }
-    }
-    
-    NSMutableArray *pathList = [[NSMutableArray alloc]init];
-    
-    for (NSString *pathName in self.cache) {
-        NSArray *pathComponentsArray = [paths objectForKey:pathName];
-        
-        CGMutablePathRef path = CGPathCreateMutable();
-        for (NSString *currentPathElement in pathComponentsArray) {
-            
-            NSArray *elements = [currentPathElement componentsSeparatedByString:@" "];
-            if ([elements[0] isEqualToString:@"MoveTo"]) {
-                CGPathMoveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue]);
-            } else if ([elements[0] isEqualToString:@"LineTo"]) {
-                CGPathAddLineToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue]);
-            } else if ([elements[0] isEqualToString:@"QuadCurveTo"]) {
-                CGPathAddQuadCurveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue]);
-            } else if ([elements[0] isEqualToString:@"CurveTo"]) {
-                CGPathAddCurveToPoint(path, NULL, [elements[1] floatValue], [elements[2] floatValue], [elements[3] floatValue], [elements[4] floatValue], [elements[5] floatValue], [elements[6] floatValue]);
-            } else {
-                NSLog(@"Error: Core Graphics Path Identifier.");
-            }
+            NSLog(@"Caching: %@", pathKey);
         }
         
-        ACEDrawingPenTool *penTool = [[ACEDrawingPenTool alloc]init];
-        penTool.identifier = pathName;
-        penTool.isCompleted = YES;
-        penTool.lineAlpha = 1.00;
-        penTool.lineColor = [UIColor blackColor];
-        penTool.lineWidth = 2.00;
+        NSDictionary *currPath = [paths objectForKey:pathKey];
+        NSString *toolType = [currPath objectForKey:@"toolType"];
         
-        [penTool setPath:path];
-        [pathList addObject:penTool];
+        if ([toolType isEqualToString:@"Pen"]) {
+            ACEDrawingPenTool *pen = [[ACEDrawingPenTool alloc]init];
+            [pen deserializePath:pathKey withInfo:currPath];
+            [pathList addObject:pen];
+        }
     }
-    
+
     self.canvas.pathArray = pathList;
     [self.canvas setNeedsDisplay];
-    
-    NSLog(@"Number of Paths: %ld", [pathList count]);
 }
 
 - (IBAction)clearButtonPressed:(id)sender {
@@ -149,7 +123,6 @@
     } else if (gesture == self.longPressGR) {
         switch (gesture.state) {
             case UIGestureRecognizerStateBegan:
-                
                 break;
             case UIGestureRecognizerStateChanged:
                 break;
@@ -200,17 +173,20 @@
             contains = YES;
         }
         
-        NSArray *points = [p serialize];
+        //Name,
+        NSDictionary *pathInfo = [p serialize];
         NSString *name = p.identifier;
         
-        [paths setObject:points forKey:name];
+        
+        [paths setObject:pathInfo forKey:name];
         NSLog(@"Putting %@", name);
     }
     
+    //Incase another device uploads a CGPath to Firebase while current device is still drawing
     if (!contains && tool) {
         Firebase *firebaseReference = [self.firebase childByAutoId];
         tool.identifier = firebaseReference.name;
-        NSArray *points = [(ACEDrawingPenTool *)tool serialize];
+        NSDictionary *points = [(ACEDrawingPenTool *)tool serialize];
         NSString *name = tool.identifier;
         
         [paths setObject:points forKey:name];

@@ -79,7 +79,7 @@
     
     // set the default values for the public properties
     self.lineColor = kDefaultLineColor;
-    self.lineWidth = kDefaultLineWidth;
+    self.lineWidth = 6.00;
     self.lineAlpha = kDefaultLineAlpha;
     
     // set the transparent background
@@ -91,7 +91,7 @@
     
     // set up rendered list of paths
     self.rendered = [[NSMutableSet alloc]init];
-    self.clearsContextBeforeDrawing = YES;
+    self.clearsContextBeforeDrawing = NO;
     
 }
 
