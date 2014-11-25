@@ -91,7 +91,7 @@
     
     // set up rendered list of paths
     self.rendered = [[NSMutableSet alloc]init];
-    self.clearsContextBeforeDrawing = NO;
+    self.clearsContextBeforeDrawing = YES;
     
 }
 
@@ -109,9 +109,6 @@
         if (![self.rendered containsObject:currentTool.identifier] && currentTool.isCompleted) {
             [self.rendered addObject:currentTool.identifier];
             NSLog(@"Added %@ to rendered set", currentTool.identifier);
-            [currentTool draw];
-        } else if (!currentTool.isCompleted) {
-            [currentTool draw];
         }
         [currentTool draw];
     }

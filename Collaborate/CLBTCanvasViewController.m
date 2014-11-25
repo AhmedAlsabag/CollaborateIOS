@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 CS378. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "CLBTCanvasViewController.h"
 #import "ACEDrawingView.h"
 #import <Firebase/Firebase.h>
 #import "ACEDrawingTools.h"
@@ -14,15 +14,16 @@
 #define PATH_INFO @"PATH_INFO"
 #define PATH_USED @"PATH_USED"
 
-@interface ViewController ()
+@interface CLBTCanvasViewController ()
 
-@property (assign, nonatomic) NSInteger             roomNumber;
-@property (strong, nonatomic) ACEDrawingView        *canvas;
-@property (strong, nonatomic) Firebase              *firebase;
-@property (strong, nonatomic) NSMutableSet          *pathSet;
-@property (nonatomic) FirebaseHandle                childAddedHandle;
-@property (nonatomic) FirebaseHandle                childChangedHandle;
-@property (nonatomic) FirebaseHandle                childRemovedHandle;
+@property (assign, nonatomic) NSInteger                     roomNumber;
+@property (weak, nonatomic) IBOutlet ACEDrawingView         *canvas;
+@property (strong, nonatomic) Firebase                      *firebase;
+@property (nonatomic) FirebaseHandle                        childAddedHandle;
+@property (nonatomic) FirebaseHandle                        childChangedHandle;
+@property (nonatomic) FirebaseHandle                        childRemovedHandle;
+@property (strong, nonatomic) UITapGestureRecognizer        *tapGR;
+@property (strong, nonatomic) UILongPressGestureRecognizer  *longPressGR;
 
 @property (strong, nonatomic) NSMutableDictionary   *cache;
 
@@ -30,36 +31,36 @@
 
 @end
 
-@implementation ViewController
+@implementation CLBTCanvasViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.cache = [[NSMutableDictionary alloc]init];
     
-    self.pathSet = [[NSMutableSet alloc]init];
-    
-    self.canvas = [[ACEDrawingView alloc]initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
     self.canvas.delegate = self;
     self.canvas.lineWidth = 2.00;
+    self.canvas.clearsContextBeforeDrawing = NO;
     
-    [self.view addSubview:self.canvas];
-    
-    [self.view addSubview:self.clearButton];
-    
-    self.firebase = [[Firebase alloc]initWithUrl:@"https://collaborateios.firebaseio.com/"];
-//    self.firebase =  [[Firebase alloc]initWithUrl:@"https://shining-fire-4147.firebaseio.com/"];
-    
+//    self.firebase = [[Firebase alloc]initWithUrl:@"https://collaborateios.firebaseio.com/"];
+    self.firebase =  [[Firebase alloc]initWithUrl:@"https://shining-fire-4147.firebaseio.com/"];
+
     self.roomNumber = 1;
+    
+    self.tapGR = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
+    self.tapGR.numberOfTapsRequired = 2;
+    self.tapGR.enabled = YES;
+    
+    self.longPressGR = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
+    self.longPressGR.minimumPressDuration = 0.00;
+    self.longPressGR.enabled = NO;
     
     self.childAddedHandle = [self.firebase observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
         [self pullFirebase:snapshot];
     }];
-    
     self.childChangedHandle = [self.firebase observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
         [self pullFirebase:snapshot];
     }];
-    
     self.childRemovedHandle = [self.firebase observeEventType:FEventTypeChildRemoved withBlock:^(FDataSnapshot *snapshot) {
         [self pullFirebase:snapshot];
         [self.canvas clear];
@@ -76,10 +77,8 @@
     for (NSString *pathKey in paths) {
         if (![self.cache objectForKey:pathKey]) {
             [self.cache setObject:[paths objectForKey:pathKey] forKey:pathKey];
-//            NSLog(@"Caching: %@", pathKey);
         }
     }
-//    NSLog(@"\n");
     
     NSMutableArray *pathList = [[NSMutableArray alloc]init];
     
@@ -87,9 +86,7 @@
         NSArray *pathComponentsArray = [paths objectForKey:pathName];
         
         CGMutablePathRef path = CGPathCreateMutable();
-//        NSLog(@"Name: %@", pathName);
         for (NSString *currentPathElement in pathComponentsArray) {
-//            NSLog(@"%@", currentPathElement);
             
             NSArray *elements = [currentPathElement componentsSeparatedByString:@" "];
             if ([elements[0] isEqualToString:@"MoveTo"]) {
@@ -104,7 +101,6 @@
                 NSLog(@"Error: Core Graphics Path Identifier.");
             }
         }
-//        NSLog(@"\n");
         
         ACEDrawingPenTool *penTool = [[ACEDrawingPenTool alloc]init];
         penTool.identifier = pathName;
@@ -144,6 +140,40 @@
     [super viewDidLayoutSubviews];
 }
 
+- (void)handleGestures:(UIGestureRecognizer *)gesture
+{
+    if (gesture == self.tapGR) {
+        self.canvas.userInteractionEnabled = NO;
+        self.tapGR.enabled = NO;
+        self.longPressGR.enabled = YES;
+    } else if (gesture == self.longPressGR) {
+        switch (gesture.state) {
+            case UIGestureRecognizerStateBegan:
+                
+                break;
+            case UIGestureRecognizerStateChanged:
+                break;
+            case UIGestureRecognizerStateEnded:
+                self.canvas.userInteractionEnabled = YES;
+                self.tapGR.enabled = YES;
+                self.longPressGR.enabled = NO;
+                break;
+            default:
+                NSLog(@"Unidentifiable Gesture State");
+                break;
+        }
+    } else {
+        NSLog(@"Unidentifiable Gesture");
+    }
+}
+
+#pragma mark UIGestureRecognizerDelegate
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+#pragma mark ACEDrawingViewDelegate Methods
 - (void)drawingView:(ACEDrawingView *)view willBeginDrawUsingTool:(id<ACEDrawingTool>)tool
 {
     tool.isCompleted = NO;
@@ -157,7 +187,6 @@
     
     NSMutableDictionary *paths = [[NSMutableDictionary alloc]init];
     NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
-    self.pathSet = [[NSMutableSet alloc]init];
     
     BOOL contains = NO;
     NSLog(@"==========Serializing==========");
@@ -175,7 +204,6 @@
         NSString *name = p.identifier;
         
         [paths setObject:points forKey:name];
-        [self.pathSet addObject:name];
         NSLog(@"Putting %@", name);
     }
     

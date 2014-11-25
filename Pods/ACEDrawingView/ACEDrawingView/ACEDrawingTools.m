@@ -82,7 +82,6 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
 - (void)draw
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-
 	CGContextAddPath(context, path);
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetLineWidth(context, self.lineWidth);

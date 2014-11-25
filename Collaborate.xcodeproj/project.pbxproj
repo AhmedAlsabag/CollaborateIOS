@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		091B5D7B03D84C4758A0264F /* libPods-Collaborate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD9D43298E43D67766C4563A /* libPods-Collaborate.a */; };
+		640BC5671A245B820065B286 /* CLBTAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 640BC5661A245B820065B286 /* CLBTAnnotationView.m */; };
 		64EDB8B419E5CE670030DF3F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B319E5CE670030DF3F /* main.m */; };
 		64EDB8B719E5CE670030DF3F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B619E5CE670030DF3F /* AppDelegate.m */; };
-		64EDB8BA19E5CE670030DF3F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B919E5CE670030DF3F /* ViewController.m */; };
+		64EDB8BA19E5CE670030DF3F /* CLBTCanvasViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B919E5CE670030DF3F /* CLBTCanvasViewController.m */; };
 		64EDB8BD19E5CE670030DF3F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64EDB8BB19E5CE670030DF3F /* Main.storyboard */; };
 		64EDB8BF19E5CE670030DF3F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64EDB8BE19E5CE670030DF3F /* Images.xcassets */; };
 		64EDB8C219E5CE670030DF3F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64EDB8C019E5CE670030DF3F /* LaunchScreen.xib */; };
@@ -28,13 +29,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		640BC5651A245B820065B286 /* CLBTAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLBTAnnotationView.h; sourceTree = "<group>"; };
+		640BC5661A245B820065B286 /* CLBTAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLBTAnnotationView.m; sourceTree = "<group>"; };
 		64EDB8AE19E5CE670030DF3F /* Collaborate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Collaborate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64EDB8B219E5CE670030DF3F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64EDB8B319E5CE670030DF3F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		64EDB8B519E5CE670030DF3F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		64EDB8B619E5CE670030DF3F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		64EDB8B819E5CE670030DF3F /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		64EDB8B919E5CE670030DF3F /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		64EDB8B819E5CE670030DF3F /* CLBTCanvasViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CLBTCanvasViewController.h; sourceTree = "<group>"; };
+		64EDB8B919E5CE670030DF3F /* CLBTCanvasViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLBTCanvasViewController.m; sourceTree = "<group>"; };
 		64EDB8BC19E5CE670030DF3F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		64EDB8BE19E5CE670030DF3F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		64EDB8C119E5CE670030DF3F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -90,8 +93,10 @@
 			children = (
 				64EDB8B519E5CE670030DF3F /* AppDelegate.h */,
 				64EDB8B619E5CE670030DF3F /* AppDelegate.m */,
-				64EDB8B819E5CE670030DF3F /* ViewController.h */,
-				64EDB8B919E5CE670030DF3F /* ViewController.m */,
+				64EDB8B819E5CE670030DF3F /* CLBTCanvasViewController.h */,
+				64EDB8B919E5CE670030DF3F /* CLBTCanvasViewController.m */,
+				640BC5651A245B820065B286 /* CLBTAnnotationView.h */,
+				640BC5661A245B820065B286 /* CLBTAnnotationView.m */,
 				64EDB8BB19E5CE670030DF3F /* Main.storyboard */,
 				64EDB8BE19E5CE670030DF3F /* Images.xcassets */,
 				64EDB8C019E5CE670030DF3F /* LaunchScreen.xib */,
@@ -278,8 +283,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				64EDB8BA19E5CE670030DF3F /* ViewController.m in Sources */,
+				64EDB8BA19E5CE670030DF3F /* CLBTCanvasViewController.m in Sources */,
 				64EDB8B719E5CE670030DF3F /* AppDelegate.m in Sources */,
+				640BC5671A245B820065B286 /* CLBTAnnotationView.m in Sources */,
 				64EDB8B419E5CE670030DF3F /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

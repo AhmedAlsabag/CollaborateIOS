@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ACEDrawingVIew.h"
 
-@interface ViewController : UIViewController <ACEDrawingViewDelegate>
+@interface CLBTCanvasViewController : UIViewController <ACEDrawingViewDelegate, UIGestureRecognizerDelegate>
 
 
 @end
