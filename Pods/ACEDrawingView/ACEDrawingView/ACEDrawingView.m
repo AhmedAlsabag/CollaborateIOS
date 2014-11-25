@@ -91,7 +91,7 @@
     
     // set up rendered list of paths
     self.rendered = [[NSMutableSet alloc]init];
-    self.clearsContextBeforeDrawing = NO;
+    self.clearsContextBeforeDrawing = YES;
     
 }
 
@@ -104,7 +104,6 @@
     [self drawPath];
 #else
     [self.image drawInRect:self.bounds];
-    [self.currentTool draw];
     for (ACEDrawingPenTool *currentTool in self.pathArray) {
         if (![self.rendered containsObject:currentTool.identifier] && currentTool.isCompleted) {
             [self.rendered addObject:currentTool.identifier];
@@ -112,6 +111,7 @@
         }
         [currentTool draw];
     }
+    [self.currentTool draw];
 #endif
 }
 
@@ -276,6 +276,8 @@
         [self.currentTool moveFromPoint:previousPoint1 toPoint:currentPoint];
         [self setNeedsDisplay];
     }
+    
+    [self.delegate drawingView:self didChangeDrawUsingTool:self.currentTool];
     
 }
 
@@ -518,6 +520,7 @@
     [self resetTool];
     [self.bufferArray removeAllObjects];
     [self.pathArray removeAllObjects];
+    [self.rendered removeAllObjects];
     self.prev_image = nil;
     [self updateCacheImage:YES];
     [self finishDrawing];

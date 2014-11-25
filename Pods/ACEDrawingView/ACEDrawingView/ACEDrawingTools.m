@@ -139,10 +139,12 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
     
     CGFloat width = [[info objectForKey:@"width"] floatValue];
     
+    BOOL completed = [[info objectForKey:@"completed"] boolValue];
+    
     self.lineColor = [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
     self.lineAlpha = alpha;
     self.lineWidth = width;
-    self.isCompleted = YES;
+    self.isCompleted = completed;
     self.identifier = name;
     
     [self setPath:currPath];
@@ -168,6 +170,9 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
     
     //Type
     [dict setObject:@"Pen" forKey:@"toolType"];
+    
+    //Completed
+    [dict setObject:[NSNumber numberWithBool:self.isCompleted] forKey:@"completed"];
     
     return dict;
 }

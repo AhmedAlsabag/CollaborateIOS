@@ -78,8 +78,8 @@ typedef enum {
 
 @protocol ACEDrawingViewDelegate <NSObject>
 
-@optional
 - (void)drawingView:(ACEDrawingView *)view willBeginDrawUsingTool:(id<ACEDrawingTool>)tool;
+- (void)drawingView:(ACEDrawingView *)view didChangeDrawUsingTool:(id<ACEDrawingTool>)tool;
 - (void)drawingView:(ACEDrawingView *)view didEndDrawUsingTool:(id<ACEDrawingTool>)tool;
 
 @end

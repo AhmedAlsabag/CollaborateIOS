@@ -38,7 +38,7 @@
 #define ACE_AUTORELEASE(exp) [(exp) autorelease]
 #endif
 
-
+//Put Serialize and Deserialize in here
 @protocol ACEDrawingTool <NSObject>
 
 @property (nonatomic, strong) UIColor *lineColor;
@@ -54,6 +54,9 @@
 
 - (void)draw;
 
+- (NSDictionary *)serialize;
+- (void)deserializePath:(NSString *)name withInfo:(NSDictionary *)info;
+
 @end
 
 #pragma mark -
@@ -67,8 +70,8 @@
 //Added by Andrew
 - (CGMutablePathRef)getPath;
 - (void)setPath:(CGMutablePathRef)newPath;
-- (NSDictionary *)serialize;
-- (void)deserializePath:(NSString *)name withInfo:(NSDictionary *)info;
+//- (NSDictionary *)serialize;
+//- (void)deserializePath:(NSString *)name withInfo:(NSDictionary *)info;
 @end
 
 #pragma mark -

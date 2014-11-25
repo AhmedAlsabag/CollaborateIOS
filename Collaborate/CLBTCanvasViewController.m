@@ -61,8 +61,8 @@
         [self pullFirebase:snapshot];
     }];
     self.childRemovedHandle = [self.firebase observeEventType:FEventTypeChildRemoved withBlock:^(FDataSnapshot *snapshot) {
-        [self pullFirebase:snapshot];
         [self.canvas clear];
+        [self.cache removeAllObjects];
     }];
 }
 
@@ -90,18 +90,46 @@
     }
 
     self.canvas.pathArray = pathList;
-    [self.canvas setNeedsDisplay];
+    [self.canvas.layer setNeedsDisplay];
+}
+
+- (void)pushFirebaseWithTool:(id<ACEDrawingTool>)tool
+{
+    NSMutableDictionary *paths = [[NSMutableDictionary alloc]init];
+    NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
+    
+    NSLog(@"==========Serializing==========");
+    if (tool) {
+        
+        if (![self.cache objectForKey:tool.identifier]) {
+            Firebase *firebaseReference = [self.firebase childByAutoId];
+            tool.identifier = firebaseReference.name;
+        }
+        
+        NSDictionary *pathInfo = [(ACEDrawingPenTool *)tool serialize];
+        [self.cache setObject:pathInfo forKey:tool.identifier];
+    }
+    
+    for (NSString *toolKey in self.cache) {
+        [paths setObject:[self.cache objectForKey:toolKey] forKey:toolKey];
+    }
+    
+    [room setObject:paths forKey:[NSString stringWithFormat:@"Room: %ld", self.roomNumber]];
+    
+    [self.firebase setValue:room withCompletionBlock:^(NSError *error, Firebase *ref) {
+        NSLog(@"Finished saving to Firebase");
+    }];
 }
 
 - (IBAction)clearButtonPressed:(id)sender {
 
     //Change to clear rendered set as well
+    [self.cache removeAllObjects];
     [self.canvas clear];
     
     [self.firebase setValue:nil withCompletionBlock:^(NSError *error, Firebase *ref) {
         NSLog(@"Finished saving to Firebase");
     }];
-
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -149,8 +177,14 @@
 #pragma mark ACEDrawingViewDelegate Methods
 - (void)drawingView:(ACEDrawingView *)view willBeginDrawUsingTool:(id<ACEDrawingTool>)tool
 {
-    tool.isCompleted = NO;
     NSLog(@"Drawing Path Began");
+    
+    tool.isCompleted = NO;
+}
+
+- (void)drawingView:(ACEDrawingView *)view didChangeDrawUsingTool:(id<ACEDrawingTool>)tool
+{
+    NSLog(@"Drawing Path Changed");
 }
 
 - (void)drawingView:(ACEDrawingView *)view didEndDrawUsingTool:(id<ACEDrawingTool>)tool
@@ -158,25 +192,7 @@
     NSLog(@"Drawing Path Ended");
     
     tool.isCompleted = YES;
-    
-    NSMutableDictionary *paths = [[NSMutableDictionary alloc]init];
-    NSMutableDictionary *room = [[NSMutableDictionary alloc]init];
-    
-    NSLog(@"==========Serializing==========");
-    for (NSString *toolKey in self.cache) {
-        [paths setObject:[self.cache objectForKey:toolKey] forKey:toolKey];
-    }
-    
-    Firebase *firebaseReference = [self.firebase childByAutoId];
-    tool.identifier = firebaseReference.name;
-    NSDictionary *pathInfo = [(ACEDrawingPenTool *)tool serialize];
-    [paths setObject:pathInfo forKey:tool.identifier];
-    
-    [room setObject:paths forKey:[NSString stringWithFormat:@"Room: %ld", self.roomNumber]];
-    
-    [self.firebase setValue:room withCompletionBlock:^(NSError *error, Firebase *ref) {
-        NSLog(@"Finished saving to Firebase");
-    }];
+    [self pushFirebaseWithTool:tool];
 }
 
 - (void)didReceiveMemoryWarning {
