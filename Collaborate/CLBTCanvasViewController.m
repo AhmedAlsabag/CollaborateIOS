@@ -61,8 +61,8 @@
         [self pullFirebase:snapshot];
     }];
     self.childRemovedHandle = [self.firebase observeEventType:FEventTypeChildRemoved withBlock:^(FDataSnapshot *snapshot) {
-        [self.canvas clear];
         [self.cache removeAllObjects];
+        [self.canvas clear];
     }];
 }
 
@@ -179,7 +179,7 @@
 {
     NSLog(@"Drawing Path Began");
     
-    tool.isCompleted = NO;
+//    tool.isCompleted = NO;
 }
 
 - (void)drawingView:(ACEDrawingView *)view didChangeDrawUsingTool:(id<ACEDrawingTool>)tool
