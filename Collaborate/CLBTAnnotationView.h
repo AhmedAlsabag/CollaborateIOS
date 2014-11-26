@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CLBTAnnotationView : UIView
+@interface CLBTAnnotationView : UIView <UIGestureRecognizerDelegate>
 
 @end

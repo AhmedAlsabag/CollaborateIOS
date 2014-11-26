@@ -9,13 +9,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Collaborate/CLBTCanvasViewController.m"
-            timestampString = "438610557.034498"
+            filePath = "Pods/ACEDrawingView/ACEDrawingView/ACEDrawingView.m"
+            timestampString = "438673874.402571"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
-            landmarkName = "-clearButtonPressed:"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
+            landmarkName = "-configure"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Collaborate/CLBTCanvasViewController.m"
-            timestampString = "438610607.872472"
+            filePath = "Collaborate/CLBTAnnotationView.m"
+            timestampString = "438672770.748221"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
-            landmarkName = "-pushFirebaseWithTool:"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "-initWithFrame:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

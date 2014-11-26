@@ -91,8 +91,7 @@
     
     // set up rendered list of paths
     self.rendered = [[NSMutableSet alloc]init];
-    self.clearsContextBeforeDrawing = YES;
-    
+    self.clearsContextBeforeDrawing = NO;
 }
 
 #pragma mark - Drawing

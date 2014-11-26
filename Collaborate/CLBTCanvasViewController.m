@@ -8,6 +8,7 @@
 
 #import "CLBTCanvasViewController.h"
 #import "ACEDrawingView.h"
+#import "CLBTAnnotationView.h"
 #import <Firebase/Firebase.h>
 #import "ACEDrawingTools.h"
 
@@ -22,12 +23,14 @@
 @property (nonatomic) FirebaseHandle                        childAddedHandle;
 @property (nonatomic) FirebaseHandle                        childChangedHandle;
 @property (nonatomic) FirebaseHandle                        childRemovedHandle;
-@property (strong, nonatomic) UITapGestureRecognizer        *tapGR;
-@property (strong, nonatomic) UILongPressGestureRecognizer  *longPressGR;
 
 @property (strong, nonatomic) NSMutableDictionary   *cache;
 
 @property (weak, nonatomic) IBOutlet UIButton *clearButton;
+@property (weak, nonatomic) IBOutlet UIButton *commentButton;
+@property (weak, nonatomic) IBOutlet UIButton *drawButton;
+
+@property (strong, nonatomic) CLBTAnnotationView            *annotationView;
 
 @end
 
@@ -45,14 +48,6 @@
     self.firebase =  [[Firebase alloc]initWithUrl:@"https://shining-fire-4147.firebaseio.com/"];
 
     self.roomNumber = 1;
-    
-    self.tapGR = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
-    self.tapGR.numberOfTapsRequired = 2;
-    self.tapGR.enabled = YES;
-    
-    self.longPressGR = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
-    self.longPressGR.minimumPressDuration = 0.00;
-    self.longPressGR.enabled = NO;
     
     self.childAddedHandle = [self.firebase observeEventType:FEventTypeChildAdded withBlock:^(FDataSnapshot *snapshot) {
         [self pullFirebase:snapshot];
@@ -121,15 +116,33 @@
     }];
 }
 
-- (IBAction)clearButtonPressed:(id)sender {
+- (IBAction)buttonPressed:(id)sender {
 
-    //Change to clear rendered set as well
-    [self.cache removeAllObjects];
-    [self.canvas clear];
-    
-    [self.firebase setValue:nil withCompletionBlock:^(NSError *error, Firebase *ref) {
-        NSLog(@"Finished saving to Firebase");
-    }];
+    if (sender == self.clearButton) {
+        //Change to clear rendered set as well
+        [self.cache removeAllObjects];
+        [self.canvas clear];
+        
+        [self.firebase setValue:nil withCompletionBlock:^(NSError *error, Firebase *ref) {
+            NSLog(@"Finished saving to Firebase");
+        }];
+    } else if (sender == self.commentButton) {
+        if (!self.annotationView) {
+            [self.annotationView removeFromSuperview];
+            self.annotationView = nil;
+        }
+        
+        self.annotationView = [[CLBTAnnotationView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
+        
+        [self.view addSubview:self.annotationView];
+    } else if (sender == self.drawButton) {
+        if (self.annotationView) {
+            [self.annotationView removeFromSuperview];
+            self.annotationView = nil;
+        }
+    } else {
+        NSLog(@"Unidentified button pressed");
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -140,32 +153,6 @@
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-}
-
-- (void)handleGestures:(UIGestureRecognizer *)gesture
-{
-    if (gesture == self.tapGR) {
-        self.canvas.userInteractionEnabled = NO;
-        self.tapGR.enabled = NO;
-        self.longPressGR.enabled = YES;
-    } else if (gesture == self.longPressGR) {
-        switch (gesture.state) {
-            case UIGestureRecognizerStateBegan:
-                break;
-            case UIGestureRecognizerStateChanged:
-                break;
-            case UIGestureRecognizerStateEnded:
-                self.canvas.userInteractionEnabled = YES;
-                self.tapGR.enabled = YES;
-                self.longPressGR.enabled = NO;
-                break;
-            default:
-                NSLog(@"Unidentifiable Gesture State");
-                break;
-        }
-    } else {
-        NSLog(@"Unidentifiable Gesture");
-    }
 }
 
 #pragma mark UIGestureRecognizerDelegate
