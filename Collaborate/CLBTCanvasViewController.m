@@ -8,7 +8,7 @@
 
 #import "CLBTCanvasViewController.h"
 #import "ACEDrawingView.h"
-#import "CLBTAnnotationView.h"
+#import "CLBTAnnotationZoneView.h"
 #import <Firebase/Firebase.h>
 #import "ACEDrawingTools.h"
 
@@ -30,7 +30,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *commentButton;
 @property (weak, nonatomic) IBOutlet UIButton *drawButton;
 
-@property (strong, nonatomic) CLBTAnnotationView            *annotationView;
+@property (strong, nonatomic) CLBTAnnotationZoneView            *annotationView;
 
 @end
 
@@ -128,18 +128,13 @@
         }];
     } else if (sender == self.commentButton) {
         if (!self.annotationView) {
-            [self.annotationView removeFromSuperview];
-            self.annotationView = nil;
+            self.annotationView = [[CLBTAnnotationZoneView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
         }
         
-        self.annotationView = [[CLBTAnnotationView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
         
         [self.view addSubview:self.annotationView];
     } else if (sender == self.drawButton) {
-        if (self.annotationView) {
-            [self.annotationView removeFromSuperview];
-            self.annotationView = nil;
-        }
+        
     } else {
         NSLog(@"Unidentified button pressed");
     }

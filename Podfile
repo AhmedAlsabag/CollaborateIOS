@@ -5,6 +5,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target "Collaborate" do
 
+pod "MMPopLabel"
 pod 'ACEDrawingView', '~> 1.3'
 pod 'Firebase', '>= 1.2.2'
 

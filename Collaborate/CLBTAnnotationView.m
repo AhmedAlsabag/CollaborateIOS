@@ -2,76 +2,87 @@
 //  CLBTAnnotationView.m
 //  Collaborate
 //
-//  Created by Andrew Chun on 11/25/14.
+//  Created by Andrew Chun on 11/26/14.
 //  Copyright (c) 2014 CS378. All rights reserved.
 //
 
 #import "CLBTAnnotationView.h"
 
+#define INFORMATION_ICON @"ⓘ"
+
 @interface CLBTAnnotationView ()
 
-@property (strong, nonatomic) UITapGestureRecognizer        *tapGR;
-@property (strong, nonatomic) UILongPressGestureRecognizer  *longPressGR;
+@property (strong, nonatomic) UIButton      *informationButton;
+@property (strong, nonatomic) MMPopLabel    *popLabel;
+@property (assign, nonatomic) BOOL          flag;
 
 @end
 
+
 @implementation CLBTAnnotationView
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame
+{
     self = [super initWithFrame:frame];
     
     if (self) {
-        self.backgroundColor = [UIColor lightGrayColor];
-        self.alpha = 0.40;
+        self.informationButton = [UIButton buttonWithType:UIButtonTypeSystem];
+        self.informationButton.frame = CGRectMake(0, 0, 50, 50);
+        [self.informationButton setTitle:INFORMATION_ICON forState:UIControlStateNormal];
+        [self.informationButton addTarget:self action:@selector(handlePopUp:) forControlEvents:UIControlEventTouchUpInside];
+        self.informationButton.backgroundColor = [UIColor blackColor];
+        [self addSubview:self.informationButton];
         
-        self.tapGR = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
-        self.tapGR.numberOfTapsRequired = 1;
-        self.tapGR.enabled = YES;
-        self.tapGR.delegate = self;
+        self.backgroundColor = [UIColor blackColor];
         
-        self.longPressGR = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
-        self.longPressGR.minimumPressDuration = 0.00;
-        self.longPressGR.enabled = NO;
-        self.longPressGR.delegate = self;
-        
-        [self addGestureRecognizer:self.tapGR];
-        [self addGestureRecognizer:self.longPressGR];
+        self.flag = false;
     }
     
     return self;
 }
 
-- (void)handleGestures:(UIGestureRecognizer *)gesture
+- (void)handlePopUp:(UIButton *)button
 {
-    if (gesture == self.tapGR) {
-        self.tapGR.enabled = NO;
-        self.longPressGR.enabled = YES;
-        NSLog(@"Double Tap Recognized");
-    } else if (gesture == self.longPressGR) {
-        switch (gesture.state) {
-            case UIGestureRecognizerStateBegan:
-                NSLog(@"Long Press Began");
-                break;
-            case UIGestureRecognizerStateChanged:
-                break;
-            case UIGestureRecognizerStateEnded:
-                self.tapGR.enabled = YES;
-                self.longPressGR.enabled = NO;
-                [self removeFromSuperview];
-                NSLog(@"Long Press Ended");
-                break;
-            default:
-                NSLog(@"Unidentifiable Gesture State");
-                break;
+    if (button == self.informationButton) {
+        if (!self.flag) {
+        
+            [[MMPopLabel appearance] setLabelColor:[UIColor colorWithRed: 0.89 green: 0.6 blue: 0 alpha: 1]];
+            [[MMPopLabel appearance] setLabelTextColor:[UIColor whiteColor]];
+            [[MMPopLabel appearance] setLabelTextHighlightColor:[UIColor greenColor]];
+            [[MMPopLabel appearance] setLabelFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:12.0f]];
+            [[MMPopLabel appearance] setButtonFont:[UIFont fontWithName:@"HelveticaNeue" size:12.0f]];
+            
+            self.popLabel = [MMPopLabel popLabelWithText:
+                      @"Lorem Ipsum is simply dummy text of the printing and typesetting industry. "
+                      "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."];
+            
+            self.popLabel.delegate = self;
+            
+            UIButton *skipButton = [[UIButton alloc] initWithFrame:CGRectZero];
+            [skipButton setTitle:NSLocalizedString(@"Skip Tutorial", @"Skip Tutorial Button") forState:UIControlStateNormal];
+            [self.popLabel addButton:skipButton];
+            
+            UIButton *okButton = [[UIButton alloc] initWithFrame:CGRectZero];
+            [okButton setTitle:NSLocalizedString(@"OK, Got It!", @"Dismiss Button") forState:UIControlStateNormal];
+            [self.popLabel addButton:okButton];
+            
+            [self addSubview:self.popLabel];
+            
+            self.flag = YES;
         }
-    } else {
-        NSLog(@"Unidentifiable Gesture");
+        
+        [self.popLabel popAtView:self];
     }
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (void)dismissedPopLabel:(MMPopLabel *)popLabel
 {
-    return YES;
+    
+}
+
+- (void)didPressButtonForPopLabel:(MMPopLabel *)popLabel atIndex:(NSInteger)index
+{
+    
 }
 
 @end

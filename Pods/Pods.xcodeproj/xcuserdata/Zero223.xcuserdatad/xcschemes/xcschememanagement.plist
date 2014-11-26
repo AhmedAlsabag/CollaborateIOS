@@ -14,6 +14,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-Collaborate-MMPopLabel.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-Collaborate.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -22,17 +27,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>46702A63EB2636C2A5772726</key>
+		<key>00D0472B926B47D098D59498</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5C526F1821F7DF8C1CE8E7C5</key>
+		<key>6769E64A9913C72FE195C8E7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>927AB49D52B66CAA625BFE1A</key>
+		<key>D0C5DA590B7AF3780D322D35</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F145DE1B1567A6B6B4297623</key>
 		<dict>
 			<key>primary</key>
 			<true/>
