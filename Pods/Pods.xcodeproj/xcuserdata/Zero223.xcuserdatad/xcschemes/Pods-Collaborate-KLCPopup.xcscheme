@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6F9B3D7A38DDF96C5014403B"
-               BuildableName = "libPods-Collaborate-Firebase.a"
-               BlueprintName = "Pods-Collaborate-Firebase"
+               BlueprintIdentifier = "F8C3D7975C9CA0308FD67A7E"
+               BuildableName = "libPods-Collaborate-KLCPopup.a"
+               BlueprintName = "Pods-Collaborate-KLCPopup"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

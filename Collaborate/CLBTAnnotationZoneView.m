@@ -11,7 +11,7 @@
 
 @interface CLBTAnnotationZoneView ()
 
-@property (strong, nonatomic) UITapGestureRecognizer        *tapGR;
+@property (strong, nonatomic) UILongPressGestureRecognizer  *longPressGR;
 @property (strong, nonatomic) UIPanGestureRecognizer        *panGR;
 
 @property (strong, nonatomic) NSMutableDictionary           *annotations;
@@ -30,21 +30,16 @@
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         
-        [UIView animateWithDuration:0.25 animations:^(void) {
-            self.backgroundColor = [UIColor lightGrayColor];
-            self.alpha = 0.20;
-        } completion:nil];
-        
-        self.tapGR = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
-        self.tapGR.numberOfTapsRequired = 1;
-        self.tapGR.enabled = YES;
-        self.tapGR.delegate = self;
+        self.longPressGR = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
+        self.longPressGR.minimumPressDuration = 0.00;
+        self.longPressGR.enabled = YES;
+        self.longPressGR.delegate = self;
         
         self.panGR = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
         self.panGR.enabled = NO;
         self.panGR.delegate = self;
         
-        [self addGestureRecognizer:self.tapGR];
+        [self addGestureRecognizer:self.longPressGR];
         [self addGestureRecognizer:self.panGR];
         
         self.annotations = [[NSMutableDictionary alloc]init];
@@ -68,12 +63,12 @@
 
 - (void)handleGestures:(UIGestureRecognizer *)gesture
 {
-    if (gesture == self.tapGR) {
-        self.tapGR.enabled = NO;
+    if (gesture == self.longPressGR) {
+        self.longPressGR.enabled = NO;
         self.panGR.enabled = YES;
-        self.currentStartPoint = [self.tapGR locationInView:self];
+        self.currentStartPoint = [self.longPressGR locationInView:self];
         self.currentAnnotation = [[CLBTAnnotationView alloc]initWithFrame:CGRectMake(self.currentStartPoint.x, self.currentStartPoint.y, 0, 0)];
-//        self.currentAnnotation.backgroundColor = [UIColor purpleColor];
+        self.currentAnnotation.backgroundColor = [UIColor purpleColor];
         self.currentAnnotation.alpha = 10.00;
         self.currentAnnotation.layer.cornerRadius = 7.50;
         [self addSubview:self.currentAnnotation];
@@ -90,7 +85,7 @@
                 break;
             }
             case UIGestureRecognizerStateEnded: {
-                self.tapGR.enabled = YES;
+                self.longPressGR.enabled = YES;
                 self.panGR.enabled = NO;
                 [self.annotations setObject:self.currentAnnotation forKey:[NSValue valueWithCGPoint:self.currentStartPoint]];
                 NSLog(@"Pan Ended");

@@ -11,6 +11,7 @@
 #import "CLBTAnnotationZoneView.h"
 #import <Firebase/Firebase.h>
 #import "ACEDrawingTools.h"
+#import "KLCPopUp.h"
 
 #define PATH_INFO @"PATH_INFO"
 #define PATH_USED @"PATH_USED"
@@ -29,8 +30,12 @@
 @property (weak, nonatomic) IBOutlet UIButton *clearButton;
 @property (weak, nonatomic) IBOutlet UIButton *commentButton;
 @property (weak, nonatomic) IBOutlet UIButton *drawButton;
+@property (weak, nonatomic) IBOutlet UIButton *menuButton;
+@property (weak, nonatomic) IBOutlet UIButton *colorPickerButton;
 
 @property (strong, nonatomic) CLBTAnnotationZoneView            *annotationView;
+
+@property (strong, nonatomic) KLCPopup                          *currentPopUp;
 
 @end
 
@@ -40,7 +45,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.cache = [[NSMutableDictionary alloc]init];
-    
+
     self.canvas.delegate = self;
     self.canvas.lineWidth = 2.00;
     
@@ -127,17 +132,42 @@
             NSLog(@"Finished saving to Firebase");
         }];
     } else if (sender == self.commentButton) {
-        if (!self.annotationView) {
-            self.annotationView = [[CLBTAnnotationZoneView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
-        }
-        
-        
-        [self.view addSubview:self.annotationView];
+//        if (!self.annotationView) {
+//            self.annotationView = [[CLBTAnnotationZoneView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
+//        }
+//        
+//        
+//        [self.view addSubview:self.annotationView];
     } else if (sender == self.drawButton) {
         
+    } else if (sender == self.menuButton) {
+        
+    } else if (sender == self.colorPickerButton) {
+        FCColorPickerViewController *colorPicker = [FCColorPickerViewController colorPicker];
+        colorPicker.view.layer.cornerRadius = 5.00;
+        colorPicker.color = self.canvas.lineColor;
+        colorPicker.delegate = self;
+        [colorPicker setModalPresentationStyle:UIModalPresentationFormSheet];
+        [self presentViewController:colorPicker animated:YES completion:nil];
+        
+//        self.currentPopUp = [KLCPopup popupWithContentView:colorPicker.view];
+//        self.currentPopUp.showType = KLCPopupShowTypeBounceInFromTop;
+//        self.currentPopUp.dismissType = KLCPopupDismissTypeBounceOutToBottom;
+//        [self.currentPopUp show];
     } else {
         NSLog(@"Unidentified button pressed");
     }
+}
+
+-(void)colorPickerViewController:(FCColorPickerViewController *)colorPicker didSelectColor:(UIColor *)color {
+    self.canvas.lineColor = color;
+    [colorPicker dismissViewControllerAnimated:YES completion:nil];
+//    [self.currentPopUp dismiss:YES];
+}
+
+-(void)colorPickerViewControllerDidCancel:(FCColorPickerViewController *)colorPicker {
+    [colorPicker dismissViewControllerAnimated:YES completion:nil];
+//    [self.currentPopUp dismiss:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated

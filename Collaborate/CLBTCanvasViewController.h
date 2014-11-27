@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "ACEDrawingVIew.h"
+#import "FCColorPickerViewController.h"
 
-@interface CLBTCanvasViewController : UIViewController <ACEDrawingViewDelegate, UIGestureRecognizerDelegate>
+@interface CLBTCanvasViewController : UIViewController <ACEDrawingViewDelegate, UIGestureRecognizerDelegate, FCColorPickerViewControllerDelegate>
 
 
 @end

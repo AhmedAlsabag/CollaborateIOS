@@ -14,7 +14,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Collaborate-MMPopLabel.xcscheme</key>
+		<key>Pods-Collaborate-KLCPopup.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-Collaborate-iOS-Color-Picker.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -27,22 +32,27 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>00D0472B926B47D098D59498</key>
+		<key>52A49B01C13B39863E38D832</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6769E64A9913C72FE195C8E7</key>
+		<key>6F9B3D7A38DDF96C5014403B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D0C5DA590B7AF3780D322D35</key>
+		<key>9BAAE4D112C4E1402CFE3786</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F145DE1B1567A6B6B4297623</key>
+		<key>D9DF760F3973D1FAA89EA920</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F8C3D7975C9CA0308FD67A7E</key>
 		<dict>
 			<key>primary</key>
 			<true/>

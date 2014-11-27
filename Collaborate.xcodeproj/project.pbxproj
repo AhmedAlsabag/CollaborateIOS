@@ -10,6 +10,7 @@
 		091B5D7B03D84C4758A0264F /* libPods-Collaborate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD9D43298E43D67766C4563A /* libPods-Collaborate.a */; };
 		640BC5671A245B820065B286 /* CLBTAnnotationZoneView.m in Sources */ = {isa = PBXBuildFile; fileRef = 640BC5661A245B820065B286 /* CLBTAnnotationZoneView.m */; };
 		641BA8611A25BA4900639005 /* CLBTAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 641BA8601A25BA4900639005 /* CLBTAnnotationView.m */; };
+		64C91AE21A27D0DE005F7F35 /* CLBTImageButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 64C91AE11A27D0DE005F7F35 /* CLBTImageButton.m */; };
 		64EDB8B419E5CE670030DF3F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B319E5CE670030DF3F /* main.m */; };
 		64EDB8B719E5CE670030DF3F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B619E5CE670030DF3F /* AppDelegate.m */; };
 		64EDB8BA19E5CE670030DF3F /* CLBTCanvasViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB8B919E5CE670030DF3F /* CLBTCanvasViewController.m */; };
@@ -34,6 +35,8 @@
 		640BC5661A245B820065B286 /* CLBTAnnotationZoneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLBTAnnotationZoneView.m; sourceTree = "<group>"; };
 		641BA85F1A25BA4900639005 /* CLBTAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLBTAnnotationView.h; sourceTree = "<group>"; };
 		641BA8601A25BA4900639005 /* CLBTAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLBTAnnotationView.m; sourceTree = "<group>"; };
+		64C91AE01A27D0DE005F7F35 /* CLBTImageButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLBTImageButton.h; sourceTree = "<group>"; };
+		64C91AE11A27D0DE005F7F35 /* CLBTImageButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLBTImageButton.m; sourceTree = "<group>"; };
 		64EDB8AE19E5CE670030DF3F /* Collaborate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Collaborate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64EDB8B219E5CE670030DF3F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64EDB8B319E5CE670030DF3F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -102,6 +105,8 @@
 				640BC5661A245B820065B286 /* CLBTAnnotationZoneView.m */,
 				641BA85F1A25BA4900639005 /* CLBTAnnotationView.h */,
 				641BA8601A25BA4900639005 /* CLBTAnnotationView.m */,
+				64C91AE01A27D0DE005F7F35 /* CLBTImageButton.h */,
+				64C91AE11A27D0DE005F7F35 /* CLBTImageButton.m */,
 				64EDB8BB19E5CE670030DF3F /* Main.storyboard */,
 				64EDB8BE19E5CE670030DF3F /* Images.xcassets */,
 				64EDB8C019E5CE670030DF3F /* LaunchScreen.xib */,
@@ -290,6 +295,7 @@
 			files = (
 				64EDB8BA19E5CE670030DF3F /* CLBTCanvasViewController.m in Sources */,
 				64EDB8B719E5CE670030DF3F /* AppDelegate.m in Sources */,
+				64C91AE21A27D0DE005F7F35 /* CLBTImageButton.m in Sources */,
 				641BA8611A25BA4900639005 /* CLBTAnnotationView.m in Sources */,
 				640BC5671A245B820065B286 /* CLBTAnnotationZoneView.m in Sources */,
 				64EDB8B419E5CE670030DF3F /* main.m in Sources */,
