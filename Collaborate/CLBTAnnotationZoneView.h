@@ -7,7 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CLBTAnnotationView.h"
+#import <Firebase/Firebase.h>
+#import "CLBTHighlightView.h"
 
-@interface CLBTAnnotationZoneView : UIView <UIGestureRecognizerDelegate>
+@protocol CLBTAnnotationZoneViewDelegate <NSObject>
+
+- (void)annotationZoneHasBeenUpdated:(NSDictionary *)annotations;
+
+@end
+
+@interface CLBTAnnotationZoneView : UIView <UIGestureRecognizerDelegate, CLBTAnnotationViewDelegate, CLBTHighlightViewDelegate>
+
+@property (weak, nonatomic) id<CLBTAnnotationZoneViewDelegate> delegate;
+- (instancetype)initWithFrame:(CGRect)frame andFirebase:(Firebase *)firebase;
 
 @end

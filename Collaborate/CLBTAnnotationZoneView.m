@@ -8,15 +8,21 @@
 
 #import "CLBTAnnotationZoneView.h"
 #import "CLBTAnnotationView.h"
+#import "KLCPopup.h"
+#import <Firebase/Firebase.h>
+#import "CLBTHighlightView.h"
 
 @interface CLBTAnnotationZoneView ()
 
-@property (strong, nonatomic) UILongPressGestureRecognizer  *longPressGR;
-@property (strong, nonatomic) UIPanGestureRecognizer        *panGR;
+@property (strong, nonatomic) Firebase                      *firebase;
 
+@property (strong, nonatomic) UILongPressGestureRecognizer  *longPressGR;
+
+@property (strong, nonatomic) NSMutableSet                  *highlightViewSet;
 @property (strong, nonatomic) NSMutableDictionary           *annotations;
-@property (strong, nonatomic) CLBTAnnotationView            *currentAnnotation;
 @property (assign, nonatomic) CGPoint                       currentStartPoint;
+@property (strong, nonatomic) KLCPopup                      *currentAnnotationModal;
+@property (strong, nonatomic) CLBTHighlightView             *currentHighlightView;
 
 @property (strong, nonatomic) UIButton                      *dismissButton;
 
@@ -24,7 +30,7 @@
 
 @implementation CLBTAnnotationZoneView
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame andFirebase:(Firebase *)firebase {
     self = [super initWithFrame:frame];
     
     if (self) {
@@ -34,21 +40,18 @@
         self.longPressGR.minimumPressDuration = 0.00;
         self.longPressGR.enabled = YES;
         self.longPressGR.delegate = self;
-        
-        self.panGR = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(handleGestures:)];
-        self.panGR.enabled = NO;
-        self.panGR.delegate = self;
-        
         [self addGestureRecognizer:self.longPressGR];
-        [self addGestureRecognizer:self.panGR];
         
         self.annotations = [[NSMutableDictionary alloc]init];
+        self.highlightViewSet = [[NSMutableSet alloc]init];
         
         self.dismissButton = [UIButton buttonWithType:UIButtonTypeSystem];
         self.dismissButton.frame = CGRectMake(CGRectGetWidth(self.bounds) - 100, 0, 100, 50);
         [self.dismissButton setTitle:@"Dismiss" forState:UIControlStateNormal];
         [self.dismissButton addTarget:self action:@selector(dismissButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.dismissButton];
+        
+        self.firebase = firebase;
     }
     
     return self;
@@ -57,6 +60,7 @@
 - (void)dismissButtonPressed:(UIButton *)button
 {
     if (button == self.dismissButton) {
+        NSLog(@"Dismiss!");
         [self removeFromSuperview];
     }
 }
@@ -64,31 +68,36 @@
 - (void)handleGestures:(UIGestureRecognizer *)gesture
 {
     if (gesture == self.longPressGR) {
-        self.longPressGR.enabled = NO;
-        self.panGR.enabled = YES;
-        self.currentStartPoint = [self.longPressGR locationInView:self];
-        self.currentAnnotation = [[CLBTAnnotationView alloc]initWithFrame:CGRectMake(self.currentStartPoint.x, self.currentStartPoint.y, 0, 0)];
-        self.currentAnnotation.backgroundColor = [UIColor purpleColor];
-        self.currentAnnotation.alpha = 10.00;
-        self.currentAnnotation.layer.cornerRadius = 7.50;
-        [self addSubview:self.currentAnnotation];
-        NSLog(@"Double Tap Recognized");
-    } else if (gesture == self.panGR) {
         switch (gesture.state) {
             case UIGestureRecognizerStateBegan: {
-                NSLog(@"Pan Began");
+                NSLog(@"LongPress Began");
+                
                 break;
             }
             case UIGestureRecognizerStateChanged: {
-                CGPoint currentPoint = [self.panGR locationInView:self];
-                self.currentAnnotation.frame = CGRectMake(self.currentStartPoint.x, self.currentStartPoint.y, currentPoint.x - self.currentStartPoint.x, currentPoint.y - self.currentStartPoint.y);
+                if (!self.currentHighlightView) {
+                    self.currentStartPoint = [self.longPressGR locationInView:self];
+                    self.currentHighlightView = [[CLBTHighlightView alloc]initWithFrame:CGRectMake(self.currentStartPoint.x, self.currentStartPoint.y, 0, 0)];
+                    self.currentHighlightView.backgroundColor = [UIColor lightGrayColor];
+                    self.currentHighlightView.layer.cornerRadius = 5.00;
+                    self.currentHighlightView.delegate = self;
+                    [self addSubview:self.currentHighlightView];
+                } else {
+                    CGPoint currPoint = [self.longPressGR locationInView:self];
+                    self.currentHighlightView.frame = CGRectMake(self.currentStartPoint.x, self.currentStartPoint.y, currPoint.x - self.currentStartPoint.x, currPoint.y - self.currentStartPoint.y);
+                }
                 break;
             }
             case UIGestureRecognizerStateEnded: {
-                self.longPressGR.enabled = YES;
-                self.panGR.enabled = NO;
-                [self.annotations setObject:self.currentAnnotation forKey:[NSValue valueWithCGPoint:self.currentStartPoint]];
-                NSLog(@"Pan Ended");
+                if (self.currentHighlightView) {
+                    CLBTAnnotationView *annotationView = [[CLBTAnnotationView alloc]initWithFrame:CGRectMake(0, 0, 200, 200)];
+                    annotationView.backgroundColor = [UIColor whiteColor];
+                    annotationView.layer.cornerRadius = 5.00;
+                    annotationView.delegate = self;
+                    
+                    self.currentAnnotationModal = [KLCPopup popupWithContentView:annotationView showType:KLCPopupShowTypeBounceInFromRight dismissType:KLCPopupDismissTypeBounceOutToLeft maskType:KLCPopupMaskTypeDimmed dismissOnBackgroundTouch:YES dismissOnContentTouch:NO];
+                    [self.currentAnnotationModal show];
+                }
                 break;
             }
             default: {
@@ -101,9 +110,61 @@
     }
 }
 
+- (void)dismissAnnotationView {
+    
+    if (![self.highlightViewSet containsObject:self.currentHighlightView]) {
+        Firebase *firebaseReference = [self.firebase childByAutoId];
+        
+        self.currentHighlightView.identifier = firebaseReference.name;
+    }
+    
+    [self.highlightViewSet addObject:self.currentHighlightView];
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
+    [dict setObject:self.currentHighlightView forKey:@"HighlightView"];
+    [dict setObject:self.currentAnnotationModal forKey:@"AnnotationViewModal"];
+    
+    [self.annotations setObject:dict forKey:self.currentHighlightView.identifier];
+    
+    [self.currentAnnotationModal dismiss:YES];
+    self.currentAnnotationModal = nil;
+    self.currentHighlightView = nil;
+    [self.delegate annotationZoneHasBeenUpdated:self.annotations];
+}
+
+- (void)touchedHighlightViewWithIdentifier:(NSString *)identifier
+{
+    NSDictionary *dict = [self.annotations objectForKey:identifier];
+    
+    self.currentHighlightView = dict[@"HighlightView"];
+    self.currentAnnotationModal = dict[@"AnnotationViewModal"];
+    
+    [((KLCPopup *)dict[@"AnnotationViewModal"]) show];
+}
+
+//- (NSMutableDictionary *)serialize
+//{
+//    
+//}
+//
+//- (NSMutableDictionary *)deserialize
+//{
+//    
+//}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    // test if our control subview is on-screen
+    if ([touch.view isDescendantOfView:self.dismissButton] || [self.highlightViewSet containsObject:touch.view]) {
+        // we touched our control surface
+        return NO; // ignore the touch
+    }
+    
+    return YES; // handle the touch
 }
 
 @end

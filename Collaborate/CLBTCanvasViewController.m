@@ -33,7 +33,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *menuButton;
 @property (weak, nonatomic) IBOutlet UIButton *colorPickerButton;
 
-@property (strong, nonatomic) CLBTAnnotationZoneView            *annotationView;
+@property (strong, nonatomic) CLBTAnnotationZoneView            *annotationZoneView;
 
 @property (strong, nonatomic) KLCPopup                          *currentPopUp;
 
@@ -132,12 +132,12 @@
             NSLog(@"Finished saving to Firebase");
         }];
     } else if (sender == self.commentButton) {
-//        if (!self.annotationView) {
-//            self.annotationView = [[CLBTAnnotationZoneView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
-//        }
-//        
-//        
-//        [self.view addSubview:self.annotationView];
+        if (!self.annotationZoneView) {
+            self.annotationZoneView = [[CLBTAnnotationZoneView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height) andFirebase:self.firebase];
+        }
+        
+
+        [self.view addSubview:self.annotationZoneView];
     } else if (sender == self.drawButton) {
         
     } else if (sender == self.menuButton) {
@@ -149,11 +149,6 @@
         colorPicker.delegate = self;
         [colorPicker setModalPresentationStyle:UIModalPresentationFormSheet];
         [self presentViewController:colorPicker animated:YES completion:nil];
-        
-//        self.currentPopUp = [KLCPopup popupWithContentView:colorPicker.view];
-//        self.currentPopUp.showType = KLCPopupShowTypeBounceInFromTop;
-//        self.currentPopUp.dismissType = KLCPopupDismissTypeBounceOutToBottom;
-//        [self.currentPopUp show];
     } else {
         NSLog(@"Unidentified button pressed");
     }
