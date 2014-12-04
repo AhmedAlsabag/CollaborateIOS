@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>Pods-Collaborate-ACEDrawingView.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>Pods-Collaborate-Firebase.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+		<key>Pods-Collaborate-KLCPopup.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
+		<key>Pods-Collaborate-iOS-Color-Picker.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>5</integer>
+		</dict>
+		<key>Pods-Collaborate.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>52A49B01C13B39863E38D832</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6F9B3D7A38DDF96C5014403B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9BAAE4D112C4E1402CFE3786</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D9DF760F3973D1FAA89EA920</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F8C3D7975C9CA0308FD67A7E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>

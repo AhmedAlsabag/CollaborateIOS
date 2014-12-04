@@ -91,7 +91,7 @@
     
     // set up rendered list of paths
     self.rendered = [[NSMutableSet alloc]init];
-    self.clearsContextBeforeDrawing = NO;
+    self.clearsContextBeforeDrawing = YES;
 }
 
 #pragma mark - Drawing
@@ -102,7 +102,7 @@
     // TODO: draw only the updated part of the image
     [self drawPath];
 #else
-    [self.image drawInRect:self.bounds];
+//    [self.image drawInRect:self.bounds];
     for (ACEDrawingPenTool *currentTool in self.pathArray) {
         if (![self.rendered containsObject:currentTool.identifier] && currentTool.isCompleted) {
             [self.rendered addObject:currentTool.identifier];

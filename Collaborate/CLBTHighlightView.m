@@ -10,6 +10,17 @@
 
 @implementation CLBTHighlightView
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    
+    if (self) {
+        self.layer.opacity = 0.40;
+    }
+    
+    return self;
+}
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesBegan:touches withEvent:event];

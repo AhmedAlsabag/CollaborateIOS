@@ -9,9 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "ACEDrawingVIew.h"
 #import "FCColorPickerViewController.h"
+#import "FlatUIKit.h"
 
-@interface CLBTCanvasViewController : UIViewController <ACEDrawingViewDelegate, UIGestureRecognizerDelegate, FCColorPickerViewControllerDelegate>
+@interface CLBTCanvasViewController : UIViewController <ACEDrawingViewDelegate, UIGestureRecognizerDelegate, FCColorPickerViewControllerDelegate,UIPopoverControllerDelegate, UIActionSheetDelegate, FUIAlertViewDelegate>
 
+@property (assign, nonatomic) NSInteger                     roomNumber;
 
 @end
 

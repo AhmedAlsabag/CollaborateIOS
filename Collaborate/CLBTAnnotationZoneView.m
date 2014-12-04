@@ -46,7 +46,7 @@
         self.highlightViewSet = [[NSMutableSet alloc]init];
         
         self.dismissButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        self.dismissButton.frame = CGRectMake(CGRectGetWidth(self.bounds) - 100, 0, 100, 50);
+        self.dismissButton.frame = CGRectMake(CGRectGetWidth(self.bounds) - 100, CGRectGetHeight(self.bounds) - 50, 100, 50);
         [self.dismissButton setTitle:@"Dismiss" forState:UIControlStateNormal];
         [self.dismissButton addTarget:self action:@selector(dismissButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.dismissButton];
