@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "JVFloatLabeledTextField.h"
+#import "JVFloatLabeledTextView.h"
 
 @interface CLBTLoginViewController : UIViewController
 

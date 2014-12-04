@@ -1,5 +1,5 @@
 #include "Pods-Collaborate-KLCPopup.xcconfig"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/KLCPopup" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/ACEDrawingView" "${PODS_ROOT}/Headers/Public/Firebase" "${PODS_ROOT}/Headers/Public/KLCPopup" "${PODS_ROOT}/Headers/Public/iOS-Color-Picker"
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/KLCPopup" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/ACEDrawingView" "${PODS_ROOT}/Headers/Public/Firebase" "${PODS_ROOT}/Headers/Public/JVFloatLabeledTextField" "${PODS_ROOT}/Headers/Public/KLCPopup" "${PODS_ROOT}/Headers/Public/iOS-Color-Picker"
 OTHER_LDFLAGS = ${PODS_COLLABORATE_KLCPOPUP_OTHER_LDFLAGS} -ObjC
 PODS_ROOT = ${SRCROOT}

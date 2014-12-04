@@ -18,6 +18,12 @@
 #define COCOAPODS_VERSION_MINOR_Firebase 2
 #define COCOAPODS_VERSION_PATCH_Firebase 2
 
+// JVFloatLabeledTextField
+#define COCOAPODS_POD_AVAILABLE_JVFloatLabeledTextField
+#define COCOAPODS_VERSION_MAJOR_JVFloatLabeledTextField 1
+#define COCOAPODS_VERSION_MINOR_JVFloatLabeledTextField 0
+#define COCOAPODS_VERSION_PATCH_JVFloatLabeledTextField 0
+
 // KLCPopup
 #define COCOAPODS_POD_AVAILABLE_KLCPopup
 #define COCOAPODS_VERSION_MAJOR_KLCPopup 1
